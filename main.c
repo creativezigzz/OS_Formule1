@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "simulation.h"
+#include "ecritureFichier.h"
+#include "fonctions.h"
 
 int main(void) {
     // Création variables globales
