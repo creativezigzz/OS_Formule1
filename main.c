@@ -381,7 +381,7 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
     }
 
     //Gère le rafraîchissement de l'affichage
-    for (int compteur = 0; compteur < ((int) raceTime / 130 * 3); compteur++) {
+    for (int counter = 0; counter < ((int) raceTime / 130 * 3); counter++) {
 
         affichage();
 
