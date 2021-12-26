@@ -169,26 +169,26 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
             printf("|%d\t", drivers[j].ID);
 
             //Affiche le temps S1
-            (drivers[j].S1 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S1)
+            (drivers[j].S1 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S1);
 
             //Affiche le temps S2
-            (drivers[j].S2 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S2)
+            (drivers[j].S2 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S2);
 
             //Affiche le temps S3
-            (drivers[j].S3 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S3)
+            (drivers[j].S3 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S3);
 
             //Affiche le temps du tour
-            (drivers[j].tour < 100.000) ? printf("|%.3f\t\t", drivers[j].tour) : printf("|%.3f\t", drivers[j].tour)
+            (drivers[j].tour < 100.000) ? printf("|%.3f\t\t", drivers[j].tour) : printf("|%.3f\t", drivers[j].tour);
 
             //Affiche le meilleur temps
-            (drivers[j].bestLap < 100.000) ? printf("|%.3f\t\t", drivers[j].bestLap) : printf("|%.3f\t", drivers[j].bestLap)
+            (drivers[j].bestLap < 100.000) ? printf("|%.3f\t\t", drivers[j].bestLap) : printf("|%.3f\t", drivers[j].bestLap);
 
             //Affiche le nombre de pit du pilote
-            (drivers[j].estPit != 0) ? printf("|%d\t", drivers[j].estPit) : printf("|0\t")
+            (drivers[j].estPit != 0) ? printf("|%d\t", drivers[j].estPit) : printf("|0\t");
 
 
             //Affiche si le pilote est out
-            (drivers[j].isOut == 1) ? printf("|X\t|\n") :  printf("|\t|\n")
+            (drivers[j].isOut == 1) ? printf("|X\t|\n") :  printf("|\t|\n");
 
             //Fin affichage
         }
@@ -199,13 +199,13 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
         for (j = 0; j < raceCarNumber; j++) {
 
-            bestS1 = (bestS1 > drivers[j].S1) ? drivers[j].S1 : bestS1
+            bestS1 = (bestS1 > drivers[j].S1) ? drivers[j].S1 : bestS1;
 
-            bestS2 = (bestS2 > drivers[j].S2) ? drivers[j].S2 : bestS2
+            bestS2 = (bestS2 > drivers[j].S2) ? drivers[j].S2 : bestS2;
 
-            bestS3 =  (bestS3 > drivers[j].S3) ? drivers[j].S3 : bestS3
+            bestS3 =  (bestS3 > drivers[j].S3) ? drivers[j].S3 : bestS3;
 
-            bestLap = (bestLap > drivers[j].bestLap) ? drivers[j].bestLap : bestLap
+            bestLap = (bestLap > drivers[j].bestLap) ? drivers[j].bestLap : bestLap;
 
         }
 
