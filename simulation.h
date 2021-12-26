@@ -16,37 +16,37 @@
 #ifndef OS_FORMULE1_SIMULATION_H
 #define OS_FORMULE1_SIMULATION_H
 
-//Lance la simulation de la course
-//nbreVoiture = nombre de voiture qui doivent tourner
-//raceTime = définit le temps max que peut durer une course
-//voitures = le tableau contenant les voitures
-void Simulation(int nbreVoiture, double raceTime, struct voiture pilotes[20]) {
+//Race Simulator
+//racecarNumber = car number running in the circuit
+//raceTime = max time limit within a circuit
+//car = list containing all the cars
+void Simulation(int racecarNumber, double raceTime, struct car drivers[20]) {
     int shmId;
     int semId;
     struct sembuf operation;
-    int nbLecteur;
-    struct voiture *circuit; //Structure qui stocke les voitures actuellement en piste
-    shmId = shmget(666, 20 * sizeof(struct voiture), IPC_CREAT | 0666);
-    if (shmId == -1) { //Erreur lors de la création de la mémoire partagée
-        printf("Erreur shmId = -1 ");
+    int readerNum;
+    struct car *circuit; //Structure containing all cars currently participating in the race
+    shmId = shmget(666, 20 * sizeof(struct car), IPC_CREAT | 0666);
+    if (shmId == -1) { //Error during shared memory creation
+        printf("Error shmId = -1 ");
         exit(1);
     }
     circuit = shmat(shmId, 0, 0);
-    if (circuit == (struct voiture *) -1) { //Erreur lors de l'accès à la mémoire partagée
-        printf("Erreur shmat = -1");
+    if (circuit == (struct car *) -1) { //Error during shared memory access
+        printf("Error shmat = -1");
         exit(1);
     }
-    void initSem() { //Initialise le sémaphore
+    void startSem() { //Launches semaphore
         key_t semKey;
         semId = semget(semKey, 2, IPC_CREAT | 0666);
         if (semKey < 0) {
-            printf("Erreur semid\n");
+            printf("Error semid\n");
             exit(0);
         }
         semctl(semId, 0, SETVAL, 1);
         semctl(semId, 1, SETVAL, 1);
     }
-    void wait(int i) { //Met le thread en attente
+    void wait(int i) { //Pauses thread
         operation.sem_num = i;
         operation.sem_op = -1;
         operation.sem_flg = SEM_UNDO;
@@ -60,33 +60,33 @@ void Simulation(int nbreVoiture, double raceTime, struct voiture pilotes[20]) {
     }
     void commencerLecture() { //Début section critique
         wait(0);
-        nbLecteur++;
-        if (nbLecteur == 1) {
+        readerNum++;
+        if (readerNum == 1) {
             wait(1);
         }
         post(0);
     }
     void arreterLecture() { //Fin section critique
         wait(0);
-        nbLecteur--;
-        if (nbLecteur == 0) {
+        readerNum--;
+        if (readerNum == 0) {
             post(1);
         }
         post(0);
     }
-    initSem();
+    startSem();
 //Cette méthode permet de sort les voitures prise sur internet et modifie pour notre projet
     void sort() {
-        struct voiture tempo; //Structure temporaire pour stocker les voitures en cours de tri
+        struct car temp; //Structure temporaire pour stocker les voitures en cours de tri
         commencerLecture(); //Section critique début
-        memcpy(pilotes, circuit, nbreVoiture * sizeof(struct voiture));
+        memcpy(drivers, circuit, racecarNumber * sizeof(struct car));
         arreterLecture(); //Section critique fin
-        for (int a = 0; a < nbreVoiture; a++) {
-            for (int b = 0; b < nbreVoiture - 1; b++) {
-                if (pilotes[b].bestLap > pilotes[b + 1].bestLap) {
-                    tempo = pilotes[b + 1];
-                    pilotes[b + 1] = pilotes[b];
-                    pilotes[b] = tempo;
+        for (int a = 0; a < racecarNumber; a++) {
+            for (int b = 0; b < racecarNumber - 1; b++) {
+                if (drivers[b].bestLap > drivers[b + 1].bestLap) {
+                    temp = drivers[b + 1];
+                    drivers[b + 1] = drivers[b];
+                    drivers[b] = temp;
                 }
             }//Fin for b
         }//Fin for a
@@ -104,39 +104,39 @@ void Simulation(int nbreVoiture, double raceTime, struct voiture pilotes[20]) {
 //Affichage écran
         printf("|N°\t|S1\t|S2\t|S3\t|Tour\t\t|Best Tour\t|PIT\t|OUT\t|\n");
         printf("\n");
-        for (j = 0; j < nbreVoiture; j++) {
-            printf("|%d\t", pilotes[j].ID); //Affiche l'id du pilote
-            if (pilotes[j].S1 == 0) { //Affiche le temps S1
+        for (j = 0; j < racecarNumber; j++) {
+            printf("|%d\t", drivers[j].ID); //Affiche l'id du pilote
+            if (drivers[j].S1 == 0) { //Affiche le temps S1
                 printf("|NULL\t");
             } else {
-                printf("|%.3f\t", pilotes[j].S1);
+                printf("|%.3f\t", drivers[j].S1);
             }
-            if (pilotes[j].S2 == 0) { //Affiche le temps S2
+            if (drivers[j].S2 == 0) { //Affiche le temps S2
                 printf("|NULL\t");
             } else {
-                printf("|%.3f\t", pilotes[j].S2);
+                printf("|%.3f\t", drivers[j].S2);
             }
-            if (pilotes[j].S3 == 0) { //Affiche le temps S3
+            if (drivers[j].S3 == 0) { //Affiche le temps S3
                 printf("|NULL\t");
             } else {
-                printf("|%.3f\t", pilotes[j].S3);
+                printf("|%.3f\t", drivers[j].S3);
             }
-            if (pilotes[j].tour < 100.000) { //Affiche le temps du tour
-                printf("|%.3f\t\t", pilotes[j].tour);
+            if (drivers[j].tour < 100.000) { //Affiche le temps du tour
+                printf("|%.3f\t\t", drivers[j].tour);
             } else {
-                printf("|%.3f\t", pilotes[j].tour);
+                printf("|%.3f\t", drivers[j].tour);
             }
-            if (pilotes[j].bestLap < 100.000) { //Affiche le meilleur temps
-                printf("|%.3f\t\t", pilotes[j].bestLap);
+            if (drivers[j].bestLap < 100.000) { //Affiche le meilleur temps
+                printf("|%.3f\t\t", drivers[j].bestLap);
             } else {
-                printf("|%.3f\t", pilotes[j].bestLap);
+                printf("|%.3f\t", drivers[j].bestLap);
             }
-            if (pilotes[j].estPit != 0) { //Affiche le nombre de pit du pilote
-                printf("|%d\t", pilotes[j].estPit);
+            if (drivers[j].estPit != 0) { //Affiche le nombre de pit du pilote
+                printf("|%d\t", drivers[j].estPit);
             } else {
                 printf("|0\t");
             }
-            if (pilotes[j].isOut == 1) { //Affiche si le pilote est out
+            if (drivers[j].isOut == 1) { //Affiche si le pilote est out
                 printf("|X\t|\n");
             } else {
                 printf("|\t|\n");
@@ -145,18 +145,18 @@ void Simulation(int nbreVoiture, double raceTime, struct voiture pilotes[20]) {
         }//Fin affichage
 //Définir les meilleurs temps
 //TO-DO Regler le probleme des best temps = 0
-        for (j = 0; j < nbreVoiture; j++) {
-            if (bestS1 > pilotes[j].S1) {
-                bestS1 = pilotes[j].S1;
+        for (j = 0; j < racecarNumber; j++) {
+            if (bestS1 > drivers[j].S1) {
+                bestS1 = drivers[j].S1;
             }
-            if (bestS2 > pilotes[j].S2) {
-                bestS2 = pilotes[j].S2;
+            if (bestS2 > drivers[j].S2) {
+                bestS2 = drivers[j].S2;
             }
-            if (bestS3 > pilotes[j].S3) {
-                bestS3 = pilotes[j].S3;
+            if (bestS3 > drivers[j].S3) {
+                bestS3 = drivers[j].S3;
             }
-            if (bestLap > pilotes[j].bestLap) {
-                bestLap = pilotes[j].bestLap;
+            if (bestLap > drivers[j].bestLap) {
+                bestLap = drivers[j].bestLap;
             }
         }
 //Afficher les meilleurs temps
@@ -166,15 +166,15 @@ void Simulation(int nbreVoiture, double raceTime, struct voiture pilotes[20]) {
         printf("Best tour : %.3f \n", bestLap);
     }
 //Faire tourner les voitures
-    for (int i = 0; i < nbreVoiture; i++) {
+    for (int i = 0; i < racecarNumber; i++) {
         if (fork() == 0) { //Creation processus fils
             circuit = shmat(shmId, 0, 0);
-            if (circuit == (struct voiture *) -1) { //Erreur lors de l'accès à la mémoire partagée
+            if (circuit == (struct car *) -1) { //Erreur lors de l'accès à la mémoire partagée
                 printf("Erreur shmat = -1");
                 exit(1);
             }
             circuit[i].totalTime = 0;
-            circuit[i].ID = pilotes[i].ID;
+            circuit[i].ID = drivers		[i].ID;
             circuit[i].bestLap = 999;
             circuit[i].isOut = 0;
             circuit[i].estPit = 0;
