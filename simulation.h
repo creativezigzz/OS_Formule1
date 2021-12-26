@@ -85,7 +85,9 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
         semop(semId, &operation, 1);
     }
 
+
     void commencerLecture() { //Début section critique
+
         wait(0);
 
         readerNum++;
@@ -97,8 +99,9 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
         post(0);
     }
-
+	
     void arreterLecture() { //Fin section critique
+
         wait(0);
 
         readerNum--;
@@ -126,6 +129,7 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
         for (int a = 0; a < raceCarNumber; a++) {
 
             for (int b = 0; b < raceCarNumber - 1; b++) {
+
 
                 if (drivers[b].bestLap > drivers[b + 1].bestLap) {
 
