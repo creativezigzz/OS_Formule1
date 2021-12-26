@@ -116,9 +116,10 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
     startSem();
 
-//Cette méthode permet de trier les voitures selon leur position dans la course
-    void sort() {
-        struct car temp; //Structure temporaire pour stocker les voitures en cours de tri
+	//Cette méthode permet de trier les voitures selon leur position dans la course
+	void sort(){
+	
+		struct car temp; //Structure temporaire pour stocker les voitures en cours de tri
 
         commencerLecture(); //Section critique début
 
@@ -126,22 +127,31 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
         arreterLecture(); //Section critique fin
 
-        for (int a = 0; a < raceCarNumber; a++) {
+		int i, j, k;
 
-            for (int b = 0; b < raceCarNumber - 1; b++) {
+		for (i = raceCarNumber / 2; i > 0; i = i / 2){ //On divise la liste des pilotes en 2
 
+			for (j = i; j < raceCarNumber; j++){
 
-                if (drivers[b].bestLap > drivers[b + 1].bestLap) {
+				for(k = j - i; k >= 0; k = k - i){
 
-                    temp = drivers[b + 1];
+					if (drivers[k+i].bestLap >= drivers[k].bestLap)
 
-                    drivers[b + 1] = drivers[b];
+						break;
 
-                    drivers[b] = temp;
-                }
-            }//Fin for b
-        }//Fin for a
-    }//Fin sort
+					else{
+
+						temp = drivers[k];
+
+						drivers[k] = drivers[k+i];
+
+						drivers[k+i] = temp;
+						
+					}
+				}
+			}
+		}
+	}
 
 //Méthode pour afficher à l'écran les différents meilleurs temps quand ceux-ci vont être appelés
     void affichage() {
