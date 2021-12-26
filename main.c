@@ -21,10 +21,10 @@ struct car {
     double S1; //Temps S1
     double S2; //Temps S2
     double S3; //Temps S3
-    double tour; //Temps tour = somme des temps
+    double lap; //Temps tour = somme des temps
     double bestLap; //Temps meilleur tour
     int isOut; //Statut de out ou non (0=non, 1=oui)
-    int estPit; //Nombre de passage en pit
+    int isPit; //Nombre de passage en pit
     double totalTime; //Temps total de la course de cette voiture
 } car[20];
 
@@ -227,13 +227,13 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
             (drivers[j].S3 == 0) ? printf("|NULL\t") : printf("|%.3f\t", drivers[j].S3);
 
             //Affiche le temps du tour
-            (drivers[j].tour < 100.000) ? printf("|%.3f\t\t", drivers[j].tour) : printf("|%.3f\t", drivers[j].tour);
+            (drivers[j].lap < 100.000) ? printf("|%.3f\t\t", drivers[j].lap) : printf("|%.3f\t", drivers[j].lap);
 
             //Affiche le meilleur temps
             (drivers[j].bestLap < 100.000) ? printf("|%.3f\t\t", drivers[j].bestLap) : printf("|%.3f\t", drivers[j].bestLap);
 
             //Affiche le nombre de pit du pilote
-            (drivers[j].estPit != 0) ? printf("|%d\t", drivers[j].estPit) : printf("|0\t");
+            (drivers[j].isPit != 0) ? printf("|%d\t", drivers[j].isPit) : printf("|0\t");
 
 
             //Affiche si le pilote est out
@@ -292,11 +292,11 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
             circuit[i].isOut = 0;
 
-            circuit[i].estPit = 0;
+            circuit[i].isPit = 0;
 
             while (circuit[i].isOut == 0 && circuit[i].totalTime < raceTime) {
 
-                circuit[i].tour = 0;
+                circuit[i].lap = 0;
 
                 //Si la voiture se crash on met les secteurs à 0 et on termine le processus
                 if (out() == 1) {
@@ -321,7 +321,7 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
                     circuit[i].totalTime += circuit[i].S1;
 
-                    circuit[i].tour += circuit[i].S1;
+                    circuit[i].lap += circuit[i].S1;
 
                     post(1);
                 //Calcul temps S2 et mise en mémoire
@@ -331,14 +331,14 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
 
                     circuit[i].totalTime += circuit[i].S2;
 
-                    circuit[i].tour += circuit[i].S2;
+                    circuit[i].lap += circuit[i].S2;
 
                     post(1);
 
                     //Calcul pit
                     if (pit() == 1) {
 
-                        circuit[i].estPit += 1;
+                        circuit[i].isPit += 1;
 
                         usleep(50000);
 
@@ -364,11 +364,11 @@ void Simulation(int raceCarNumber, double raceTime, struct car drivers[20]) {
                 //Calcul temps S3 et mise en mémoire
                     wait(1);
 
-                    circuit[i].tour += circuit[i].S3;
+                    circuit[i].lap += circuit[i].S3;
 
                     circuit[i].totalTime += circuit[i].S3;
 
-                    circuit[i].bestLap = min(circuit[i].bestLap, circuit[i].tour);
+                    circuit[i].bestLap = min(circuit[i].bestLap, circuit[i].lap);
 
                     post(1);
 
@@ -452,20 +452,20 @@ int exportTXT(int step, int nbrVoiture, struct car drivers[20]) {
             } else {
                 fprintf(fichier, "|%.3f\t", drivers[j].S3);
             }
-            if (drivers[j].tour == 0) { //Imprime le temps du tour
+            if (drivers[j].lap == 0) { //Imprime le temps du tour
                 fprintf(fichier, "|NULL\t\t");
-            } else if (drivers[j].tour < 100.000) {
-                fprintf(fichier, "|%.3f\t\t", drivers[j].tour);
+            } else if (drivers[j].lap < 100.000) {
+                fprintf(fichier, "|%.3f\t\t", drivers[j].lap);
             } else {
-                fprintf(fichier, "|%.3f\t", drivers[j].tour);
+                fprintf(fichier, "|%.3f\t", drivers[j].lap);
             }
             if (drivers[j].bestLap < 100.000) { //Imprime le meilleur temps
                 fprintf(fichier, "|%.3f\t\t", drivers[j].bestLap);
             } else {
                 fprintf(fichier, "|%.3f\t", drivers[j].bestLap);
             }
-            if (drivers[j].estPit != 0) { //Imprime le nombre de pit du pilote
-                fprintf(fichier, "|%d\t", drivers[j].estPit);
+            if (drivers[j].isPit != 0) { //Imprime le nombre de pit du pilote
+                fprintf(fichier, "|%d\t", drivers[j].isPit);
             } else {
                 fprintf(fichier, "|0\t");
             }
@@ -483,7 +483,7 @@ int exportTXT(int step, int nbrVoiture, struct car drivers[20]) {
 
 //Main
 int main(void) {
-    int id[20] = {7, 99, 5, 16, 8, 20, 4, 55, 10, 26, 44, 77, 11, 18, 23, 33, 3, 27, 63, 88}; //Id des pilotes
+    int id[20] = {44, 77, 11, 33, 3, 4, 5, 18, 14, 31, 16, 55, 10, 22, 7, 99, 9, 47, 6, 63}; //Id des pilotes
     int lapTime = 130; //Temps moyen pour un tour afin de déterminer le temps de la course
     int totalLap = 45; //Nombres de tour
     struct car tri[20];
